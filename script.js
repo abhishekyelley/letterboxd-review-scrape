@@ -10,7 +10,9 @@ const H_reviewContent = document.querySelector("#reviewContent");
 const req = new XMLHttpRequest();
 const checkArr = ["https:", "", "letterboxd.com", "username", "film", "moviename"];
 
+const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
 var INPUT_URL = "";
+
 inputURLField.addEventListener("keypress", (event)=>{
     if (event.key === "Enter") {
         event.preventDefault();
@@ -24,7 +26,7 @@ submitURLBtn.addEventListener("click", ()=>{
     // console.log(INPUT_URL);
     var isBadURL = validURL(INPUT_URL.split('/'));
     if(!isBadURL){
-        req.open("GET", "https://cors-anywhere.herokuapp.com/" + INPUT_URL, true);
+        req.open("GET", PROXY_URL + INPUT_URL, true);
         req.responseType = "document";
         req.send(null);
     }
