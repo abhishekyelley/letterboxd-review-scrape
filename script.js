@@ -97,29 +97,34 @@ req.onload = ()=>{
 // chinna animation
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const inputURLLabel = document.querySelector("#inputURLLabel");
-var funnyAnimation = null;
-var initWidthBox = inputURLField.style.minWidth
 inputURLLabel.addEventListener("click", async ()=>{
-    clearInterval(funnyAnimation);
-    var pos = 1;
-    var incr = true;
     const startPos = 80;
-    const endPos = 85;
-    inputURLField.style.minWidth = startPos;
-    
-    funnyAnimation = setInterval(moveBox, 10);
-    function moveBox(){
-        if(pos == 0){
-            clearInterval(funnyAnimation);
-        }
-        else if(pos == endPos-startPos)
-            incr = false;
-        if(incr)
-            pos++;
-        else
-            pos--;
-        inputURLField.style.minWidth = startPos+pos+"vh";
+    var x = startPos;
+    inputURLField.style.minWidth = startPos+"vh";
+    for(var i=1; i<=5; i++){
+        inputURLField.style.minWidth = x-1+"vh";
+        x -= 1;
+        await sleep(12);
     }
-    // await sleep(250);
-    // inputURLField.style.minWidth = "80vh";
+    for(var i=1; i<=15; i++){
+        inputURLField.style.minWidth = x+1+"vh";
+        x += 1;
+        await sleep(9);
+    }
+    for(var i=1; i<=10; i++){
+        inputURLField.style.minWidth = x-1+"vh";
+        x -= 1;
+        await sleep(12);
+    }
+    for(var i=1; i<=5; i++){
+        inputURLField.style.minWidth = x+1+"vh";
+        x += 1;
+        await sleep(18);
+    }
+    for(var i=1; i<=5; i++){
+        inputURLField.style.minWidth = x-1+"vh";
+        x -= 1;
+        await sleep(21);
+    }
+    inputURLField.style.minWidth = startPos+"vh";
 });
