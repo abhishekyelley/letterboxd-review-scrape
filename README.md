@@ -1,2 +1,2 @@
 # letterboxd-review-scrape
-Get review information from any Review on letterboxd.com
+Get film review information from any Review on letterboxd.com
