@@ -31,7 +31,9 @@ submitURLBtn.addEventListener("click", ()=>{
         req.send(null);
     }
     else{
-        window.alert("Bad URL!");
+        boxDance();
+        // window.alert("Bad URL!");
+        inputURLField.value = "Bad URL!";
     }
     
 });
@@ -97,19 +99,31 @@ req.onload = ()=>{
 // chinna animation
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const inputURLLabel = document.querySelector("#inputURLLabel");
-inputURLLabel.addEventListener("click", async ()=>{
+inputURLLabel.addEventListener("click", boxDance);
+async function boxDance(){
     const startPos = 80;
     var x = startPos;
     inputURLField.style.minWidth = startPos+"vh";
-    for(var i=1; i<=5; i++){
+    for(var i=1; i<=10; i++){
         inputURLField.style.minWidth = x-1+"vh";
         x -= 1;
-        await sleep(12);
+        await sleep(6);
     }
-    for(var i=1; i<=15; i++){
+    /*
+    // jitter animation
+    var minusPlus = -2;
+    for(var i=1; i<=20; i++){
+
+        inputURLField.style.minWidth = x+minusPlus+"vh";
+        minusPlus *= -1;
+        await sleep(1);
+    }
+    */
+    await sleep(30);
+    for(var i=1; i<=20; i++){
         inputURLField.style.minWidth = x+1+"vh";
         x += 1;
-        await sleep(9);
+        await sleep(6);
     }
     for(var i=1; i<=10; i++){
         inputURLField.style.minWidth = x-1+"vh";
@@ -127,4 +141,4 @@ inputURLLabel.addEventListener("click", async ()=>{
         await sleep(21);
     }
     inputURLField.style.minWidth = startPos+"vh";
-});
+}
