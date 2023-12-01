@@ -7,7 +7,6 @@ const H_reviewerName = document.querySelector("#reviewerName");
 const H_reviewRating = document.querySelector("#reviewRating");
 const H_reviewContent = document.querySelector("#reviewContent");
 
-const req = new XMLHttpRequest();
 const checkArr = ["https:", "", "letterboxd.com", "username", "film", "moviename"];
 
 const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
@@ -26,9 +25,7 @@ submitURLBtn.addEventListener("click", ()=>{
     // console.log(INPUT_URL);
     var isBadURL = validURL(INPUT_URL.split('/'));
     if(!isBadURL){
-        req.open("GET", PROXY_URL + INPUT_URL, true);
-        req.responseType = "document";
-        req.send(null);
+        scraper(PROXY_URL + INPUT_URL);
     }
     else{
         boxDance();
@@ -52,11 +49,13 @@ function validURL(splitten){
     return false;
 }
 
-
-req.onload = ()=>{
-    if(req.readyState === req.DONE && req.status === 200){
-        const res = req.responseXML;
-
+async function scraper(url) {
+    const response = await fetch(url);
+    if(response.ok){
+        const html = await response.text();
+        
+        var parser = new DOMParser();
+        const res = parser.parseFromString(html, "text/html");
         var reviewContent = "";
         var reviewContentHelp = res.querySelector(".review.body-text.-prose.-hero");
 
@@ -91,10 +90,9 @@ req.onload = ()=>{
         H_filmName.textContent = filmName;
     }
     else{
-        console.log(req.status, req.statusText);
+        console.log("Not OK!", response.status);
     }
-};
-
+}
 
 // chinna animation
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
