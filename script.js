@@ -7,7 +7,7 @@ const H_reviewerName = document.querySelector("#reviewerName");
 const H_reviewRating = document.querySelector("#reviewRating");
 const H_reviewContent = document.querySelector("#reviewContent");
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = "https://letterboxd-review-api-abhishekyelleys-projects.vercel.app";
 var INPUT_URL = "";
 
 inputURLField.addEventListener("keypress", (event)=>{
