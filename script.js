@@ -7,9 +7,7 @@ const H_reviewerName = document.querySelector("#reviewerName");
 const H_reviewRating = document.querySelector("#reviewRating");
 const H_reviewContent = document.querySelector("#reviewContent");
 
-const checkArr = ["https:", "", "letterboxd.com", "username", "film", "moviename"];
-
-const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
+const BASE_URL = "http://localhost:8080";
 var INPUT_URL = "";
 
 inputURLField.addEventListener("keypress", (event)=>{
@@ -23,9 +21,12 @@ submitURLBtn.addEventListener("click", ()=>{
     INPUT_URL = inputURLField.value;
     INPUT_URL = INPUT_URL.trim();
     // console.log(INPUT_URL);
-    var isBadURL = validURL(INPUT_URL.split('/'));
-    if(!isBadURL){
-        scraper(PROXY_URL + INPUT_URL);
+    const obj = validURL(INPUT_URL.split('/'));
+    if(obj.valid){
+        const uid = obj.uid;
+        const fid = obj.fid;
+        const vid = obj.vid;
+        scraper(`${BASE_URL}/review?uid=${uid}&fid=${fid}&vid=${vid}`);
     }
     else{
         boxDance();
@@ -37,61 +38,59 @@ submitURLBtn.addEventListener("click", ()=>{
 
 
 function validURL(splitten){
-    var n = Math.min(checkArr.length, splitten.length);
-    for(var i=0; i<n; i+=1){
-        if(i==3 || i==5){
-            continue;
-        }
-        if(checkArr[i] != splitten[i]){
-            return true;
+    var obj = {valid: false, uid: null, fid: null, vid: null};
+    for(var i=0; i<splitten.length; i++){
+        if(splitten[i] == "letterboxd.com"){
+            if(i+3<splitten.length){
+                obj.uid = splitten[i+1];
+                obj.fid = splitten[i+3];
+                if(i+4<splitten.length)
+                    obj.vid = splitten[i+4];
+                obj.valid = true;
+            }
+            break;
         }
     }
-    return false;
+    return obj;
 }
 
-async function scraper(url) {
-    const response = await fetch(url);
-    if(response.ok){
-        const html = await response.text();
-        
-        var parser = new DOMParser();
-        const res = parser.parseFromString(html, "text/html");
-        var reviewContent = "";
-        var reviewContentHelp = res.querySelector(".review.body-text.-prose.-hero");
-
-        if(reviewContentHelp.querySelector(".contains-spoilers")){
-            reviewContentHelp = reviewContentHelp.querySelector(".show-review.hidden-spoilers").querySelectorAll("p");
-        }
-        else{
-            reviewContentHelp = reviewContentHelp.querySelector("div").querySelector("div").querySelectorAll("p")
-        }
-        // write content into reviewContent
-        reviewContentHelp.forEach(item => {
-            reviewContent += item.innerText;
-        });
-
-        const reviewStarsHelp = res.querySelector(".headline-2.prettify").querySelectorAll("span");
-        // write stars into reviewStars
-        const reviewStars = reviewStarsHelp[reviewStarsHelp.length-1].innerText;
-        
-        const reviewerName = res.querySelector(".title-4").querySelector("a").querySelector("span").innerText;
-        const filmName = res.querySelector(".film-title-wrapper").querySelector("a").innerText;
-        const filmYear = res.querySelector(".film-title-wrapper").querySelector("small").innerText;
+function scraper(url) {
+    fetch(url)
+    .then((response) => {
+        return new Promise((resolve, reject) => {
+            resolve(response.json())})
+    })
+    .then((res) => {
+        const reviewerName = res.reviewerName;
+        const reviewRating = res.reviewRating;
+        const reviewDesc = res.reviewDesc;
+        const reviewContent = res.reviewContent;
+        const filmName = res.filmName;
+        const filmYear = res.filmYear;
         
         console.log(reviewerName);
-        console.log(reviewStars);
+        console.log(reviewRating);
+        console.log(reviewDesc);
         console.log(reviewContent);
         console.log(filmName);
         console.log(filmYear);
+
+        const star = "★";
+        const half = "½";
+        var reviewStars = "";
+        for(var i=0; i<Math.floor(reviewRating); i++)
+            reviewStars += star;
+        if(reviewRating-Math.floor(reviewRating) > 0)
+            reviewStars += half;
         H_reviewContent.textContent = reviewContent;
         H_reviewRating.textContent = reviewStars;
         H_reviewerName.textContent = "Reviewer: " + reviewerName;
         H_filmYear.textContent = filmYear;
         H_filmName.textContent = filmName;
-    }
-    else{
-        console.log("Not OK!", response.status);
-    }
+    })
+    .catch((error) => {
+        console.error(error);
+    });
 }
 
 // chinna animation
