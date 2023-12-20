@@ -38,13 +38,13 @@ submitURLBtn.addEventListener("click", ()=>{
 
 
 function validURL(splitten){
-    var obj = {valid: false, uid: null, fid: null, vid: null};
+    var obj = {valid: false, uid: null, fid: null, vid: 0};
     for(var i=0; i<splitten.length; i++){
         if(splitten[i] == "letterboxd.com"){
             if(i+3<splitten.length){
                 obj.uid = splitten[i+1];
                 obj.fid = splitten[i+3];
-                if(i+4<splitten.length)
+                if(i+4<splitten.length && splitten[i+4])
                     obj.vid = splitten[i+4];
                 obj.valid = true;
             }
@@ -55,10 +55,13 @@ function validURL(splitten){
 }
 
 function scraper(url) {
-    fetch(url)
+    fetch(url, { method: 'GET' })
     .then((response) => {
-        return new Promise((resolve, reject) => {
-            resolve(response.json())})
+        if(response.ok){
+            console.log(response.url);
+            return response.json();
+        }
+        return Promise.reject(response);
     })
     .then((res) => {
         const reviewerName = res.reviewerName;
@@ -67,13 +70,6 @@ function scraper(url) {
         const reviewContent = res.reviewContent;
         const filmName = res.filmName;
         const filmYear = res.filmYear;
-        
-        console.log(reviewerName);
-        console.log(reviewRating);
-        console.log(reviewDesc);
-        console.log(reviewContent);
-        console.log(filmName);
-        console.log(filmYear);
 
         const star = "★";
         const half = "½";
@@ -84,12 +80,13 @@ function scraper(url) {
             reviewStars += half;
         H_reviewContent.textContent = reviewContent;
         H_reviewRating.textContent = reviewStars;
+        H_reviewRating.title = reviewRating;
         H_reviewerName.textContent = "Reviewer: " + reviewerName;
         H_filmYear.textContent = filmYear;
         H_filmName.textContent = filmName;
     })
     .catch((error) => {
-        console.error(error);
+        error.json().then((res) => console.error(res));
     });
 }
 
